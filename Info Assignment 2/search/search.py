@@ -86,13 +86,56 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Stack
+    
+    fringe = Stack()
+    fringe.push(problem.getStartState())
+    visited = []
+    path = []
+    pathToCurrent = Stack()
+    currState = fringe.pop()
+
+    while not problem.isGoalState(currState):
+        if currState not in visited:
+            visited.append(currState)
+            successors = problem.getSuccessors(currState)
+            for child , direction , cost in successors:
+                fringe.push(child)
+                tempPath = path + [direction]
+                pathToCurrent.push(tempPath)
+        currState = fringe.pop();
+        path = pathToCurrent.pop()
+    
+    return path
+    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    from util import Queue
+
+    fringe = Queue()
+    fringe.push(problem.getStartState())
+    visited = []
+    tempPath = []
+    path = []
+    pathToCurrent = Queue()
+    currState = fringe.pop()
+
+    while not problem.isGoalState(currState):
+        if currState not in visited:
+            visited.append(currState)
+            successors = problem.getSuccessors(currState)
+            for child , direction , cost in successors:
+                fringe.push(child)
+                tempPath = path + [direction]
+                pathToCurrent.push(tempPath)
+        currState = fringe.pop()
+        path = pathToCurrent.pop()
+
+    return path
+
+    # util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -108,8 +151,30 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue,PriorityQueue
+    fringe = PriorityQueue()              
+    fringe.push(problem.getStartState(),0)
+    currState = fringe.pop()
+    visited = []                          
+    tempPath=[]                           
+    path=[]                               
+    pathToCurrent=PriorityQueue()         
+    
+    while not problem.isGoalState(currState):
+        if currState not in visited:
+            visited.append(currState)
+            successors = problem.getSuccessors(currState)
+            for child,direction,cost in successors:
+                tempPath = path + [direction]
+                costToGo = problem.getCostOfActions(tempPath) + heuristic(child,problem)
+                if child not in visited:
+                    fringe.push(child,costToGo)
+                    pathToCurrent.push(tempPath,costToGo)
+        currState = fringe.pop()
+        path = pathToCurrent.pop()    
+    
+    return path
+    # util.raiseNotDefined()
 
 
 # Abbreviations
