@@ -264,7 +264,7 @@ class Grid:
 
     def _unpackInt(self, packed, size):
         bools = []
-        if packed < 0: raise ValueError( "must be a positive integer")
+        if packed < 0: raise ValueError, "must be a positive integer"
         for i in range(size):
             n = 2 ** (self.CELLS_PER_INT - i - 1)
             if packed >= n:
@@ -427,8 +427,8 @@ class GameStateData:
         for i, state in enumerate( self.agentStates ):
             try:
                 int(hash(state))
-            except TypeError as e:
-                print(e)
+            except TypeError, e:
+                print e
                 #hash(state)
         return int((hash(tuple(self.agentStates)) + 13*hash(self.food) + 113* hash(tuple(self.capsules)) + 7 * hash(self.score)) % 1048575 )
 
@@ -505,8 +505,6 @@ class GameStateData:
         self._eaten = [False for a in self.agentStates]
 
 try:
-    import sys
-    sys.path.append("C:\Program Files\BOINC")
     import boinc
     _BOINC_ENABLED = True
 except:
@@ -530,9 +528,8 @@ class Game:
         self.totalAgentTimes = [0 for agent in agents]
         self.totalAgentTimeWarnings = [0 for agent in agents]
         self.agentTimeout = False
-        from io import BytesIO
-        from io import StringIO
-        self.agentOutput = [StringIO.StringIO() for agent in agents]
+        import cStringIO
+        self.agentOutput = [cStringIO.StringIO() for agent in agents]
 
     def getProgress(self):
         if self.gameOver:
@@ -552,9 +549,8 @@ class Game:
 
     def mute(self, agentIndex):
         if not self.muteAgents: return
-        global OLD_STDOUT, OLD_STDERR        
-        from io import BytesIO
-        from io import StringIO
+        global OLD_STDOUT, OLD_STDERR
+        import cStringIO
         OLD_STDOUT = sys.stdout
         OLD_STDERR = sys.stderr
         sys.stdout = self.agentOutput[agentIndex]
@@ -603,7 +599,7 @@ class Game:
                             self.agentTimeout = True
                             self._agentCrash(i, quiet=True)
                             return
-                    except Exception as data:
+                    except Exception,data:
                         self._agentCrash(i, quiet=False)
                         self.unmute()
                         return
@@ -633,7 +629,7 @@ class Game:
                             skip_action = True
                         move_time += time.time() - start_time
                         self.unmute()
-                    except Exception as data:
+                    except Exception,data:
                         self._agentCrash(agentIndex, quiet=False)
                         self.unmute()
                         return
@@ -682,7 +678,7 @@ class Game:
                         self.unmute()
                         return
                     self.unmute()
-                except Exception as data:
+                except Exception,data:
                     self._agentCrash(agentIndex)
                     self.unmute()
                     return
@@ -695,7 +691,7 @@ class Game:
             if self.catchExceptions:
                 try:
                     self.state = self.state.generateSuccessor( agentIndex, action )
-                except Exception as data:
+                except Exception,data:
                     self.mute(agentIndex)
                     self._agentCrash(agentIndex)
                     self.unmute()
@@ -725,7 +721,7 @@ class Game:
                     self.mute(agentIndex)
                     agent.final( self.state )
                     self.unmute()
-                except Exception as data:
+                except Exception,data:
                     if not self.catchExceptions: raise
                     self._agentCrash(agentIndex)
                     self.unmute()
